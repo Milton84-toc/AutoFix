@@ -1,0 +1,5 @@
+PASS · Administrador abrió las 12 vistas obligatorias contando el acceso y el dashboard.
+PASS · Formularios MVC guardaron cliente, vehículo, orden, asignación, diagnóstico y presupuesto. La reparación consumió existencias.
+PASS · La fotografía se renderizó por el proxy autenticado de MVC.
+PASS · Recepción, supervisor, mecánico y cliente vieron los controles de su rol.
+PASS · El cliente consultó su presupuesto en una pantalla móvil de 390 px.

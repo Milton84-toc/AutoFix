@@ -1,0 +1,16 @@
+@model RepuestoFila
+<form asp-action="GuardarRepuesto" method="post" class="form-grid cols">
+    <input type="hidden" name="id" value="@Model?.Id">
+    <label>Código <input name="Codigo" value="@Model?.Codigo" required maxlength="40"></label>
+    <label>Nombre <input name="Nombre" value="@Model?.Nombre" required maxlength="100"></label>
+    <label>Descripción <input name="Descripcion" value="@Model?.Descripcion" required maxlength="250"></label>
+    <label>Categoría <input name="Categoria" value="@Model?.Categoria" required maxlength="60"></label>
+    <label>Marca <input name="Marca" value="@Model?.Marca" required maxlength="60"></label>
+    <label>Precio (USD) <input name="Precio" value="@Model?.Precio.ToString(CultureInfo.InvariantCulture)" type="number" step=".01" min="0" max="1000000" required></label>
+    <label>Stock mínimo <input name="StockMinimo" value="@(Model?.StockMinimo ?? 0)" type="number" min="0" max="1000000" required></label>
+    @if (Model is null)
+    {
+        <label>Existencia inicial <input name="Existencias" value="0" type="number" min="0" max="1000000" required></label>
+    }
+    <div><button>Guardar repuesto</button></div>
+</form>

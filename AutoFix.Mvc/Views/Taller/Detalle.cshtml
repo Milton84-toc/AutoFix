@@ -1,0 +1,94 @@
+@model DetalleVm
+@{
+    var d = Model.Datos;
+    var o = d.Orden;
+    var e = o.Estado;
+    var editar = User.HasClaim("permiso", Permisos.Editar);
+    var taller = editar && !User.IsInRole(Roles.Recepcion);
+    var oficina = editar && !User.IsInRole(Roles.Mecanico);
+    ViewData["Title"] = o.Numero;
+}
+<header class="cabecera"><div><a class="kicker" href="/ordenes">← Órdenes</a><h1>@o.Numero</h1><p class="muted">@o.Servicio · @o.Placa</p></div><span class="estado e-@e">@Etiquetas.De(e)</span></header>
+<nav class="tabs" aria-label="Secciones de la orden">
+    <a class="active" href="/ordenes/@o.Id">Detalle</a><a href="/ordenes/@o.Id/presupuesto">Presupuesto</a><a href="/ordenes/@o.Id/evidencias">Evidencias (@d.Evidencias.Count)</a>
+</nav>
+<div class="split">
+    <section class="panel">
+        <h2>Datos de la reparación</h2>
+        <dl class="ficha">
+            <div><dt>Cliente</dt><dd>@o.Cliente</dd></div><div><dt>Vehículo</dt><dd>@o.Placa</dd></div>
+            <div><dt>Fecha de ingreso</dt><dd>@HoraTaller.Texto(o.Ingreso)</dd></div>
+            <div><dt>Entrega estimada</dt><dd>@HoraTaller.Texto(o.FinEstimado)</dd></div>
+            <div><dt>Mecánico</dt><dd>@(o.Mecanico ?? "Por asignar")</dd></div>
+            @if (d.Inicio is DateTime inicio && d.Fin is DateTime fin)
+            {
+                <div><dt>Horario asignado</dt><dd>@HoraTaller.Texto(inicio) a @HoraTaller.Texto(fin)</dd></div>
+            }
+        </dl>
+        <h3>Problema reportado</h3><p>@d.Problema</p>
+        <h3>Diagnóstico</h3><p>@(d.Diagnostico ?? "Pendiente")</p>
+        @if (taller && e == Estado.EnDiagnostico)
+        {
+            <form asp-action="Diagnostico" asp-route-id="@o.Id" method="post" class="form-grid">
+                <input type="hidden" name="Version" value="@d.Version">
+                <label>Actualizar diagnóstico <textarea name="Diagnostico" rows="3" required maxlength="1000">@d.Diagnostico</textarea></label>
+                <div><button>Guardar diagnóstico</button></div>
+            </form>
+        }
+    </section>
+    <div>
+        @if (Model.Mecanicos.Any(x => x.Activo))
+        {
+            <section class="panel">
+                <h2>Asignar mecánico</h2>
+                <form asp-action="Asignar" asp-route-id="@o.Id" method="post" class="form-grid">
+                    <input type="hidden" name="Version" value="@d.Version">
+                    <label>Mecánico <select name="MecanicoId" required>
+                        @foreach (var m in Model.Mecanicos.Where(x => x.Activo)) { <option value="@m.Id" selected="@(m.Id == d.MecanicoId)">@m.Nombre · @m.Especialidad</option> }
+                    </select></label>
+                    <label>Inicio (El Salvador) <input name="Inicio" type="datetime-local" value="@(d.Inicio.HasValue ? HoraTaller.Campo(d.Inicio.Value) : "")" required></label>
+                    <label>Fin (El Salvador) <input name="Fin" type="datetime-local" value="@(d.Fin.HasValue ? HoraTaller.Campo(d.Fin.Value) : "")" required></label>
+                    <div><button>Guardar asignación</button></div>
+                </form>
+            </section>
+        }
+        @{
+            var siguiente = e switch
+            {
+                Estado.Recibido when taller && d.MecanicoId.HasValue => (Estado.EnDiagnostico, "Iniciar diagnóstico"),
+                Estado.Aprobado when taller && d.MecanicoId.HasValue => (Estado.EnReparacion, "Iniciar reparación y descontar repuestos"),
+                Estado.Finalizado when oficina => (Estado.Entregado, "Marcar como entregado"),
+                _ => (e, "")
+            };
+            var finalizar = e == Estado.EnReparacion && User.HasClaim("permiso", Permisos.Finalizar);
+            var cancelar = oficina && e < Estado.EnReparacion;
+        }
+        @if (siguiente.Item2.Length > 0 || finalizar || cancelar)
+        {
+            <section class="panel acciones">
+                <h2>Acciones de la orden</h2>
+                @if (siguiente.Item2.Length > 0)
+                {
+                    <form asp-action="EstadoOrden" asp-route-id="@o.Id" method="post">
+                        <input type="hidden" name="Version" value="@d.Version"><input type="hidden" name="Estado" value="@siguiente.Item1">
+                        <button>@siguiente.Item2</button>
+                    </form>
+                }
+                @if (finalizar)
+                {
+                    <form asp-action="Finalizar" asp-route-id="@o.Id" method="post">
+                        <input type="hidden" name="Version" value="@d.Version"><button>Finalizar reparación</button>
+                    </form>
+                }
+                @if (cancelar)
+                {
+                    <form asp-action="EstadoOrden" asp-route-id="@o.Id" method="post" data-confirmar="¿Cancelar esta orden?">
+                        <input type="hidden" name="Version" value="@d.Version"><input type="hidden" name="Estado" value="Cancelado">
+                        <button class="peligro">Cancelar orden</button>
+                    </form>
+                }
+            </section>
+        }
+    </div>
+</div>
+@section Scripts { <script src="~/taller.js" asp-append-version="true" defer></script> }

@@ -1,0 +1,36 @@
+@model List<ClienteFila>
+@{
+    ViewData["Title"] = "Clientes";
+    var editar = User.IsInRole(Roles.Admin) || User.IsInRole(Roles.Recepcion);
+}
+<header class="cabecera"><div><p class="kicker">Directorio</p><h1>Clientes</h1></div></header>
+@if (editar)
+{
+    <details class="panel"><summary>Nuevo cliente</summary>@await Html.PartialAsync("_ClienteForm", (ClienteFila?)null, ViewData)</details>
+}
+<section class="panel">
+    <div class="tabla"><table><thead><tr><th>Nombre</th><th>Identificación</th><th>Contacto</th><th>Dirección</th></tr></thead><tbody>
+    @foreach (var c in Model)
+    {
+        <tr><td><strong>@c.Nombre</strong></td><td>@c.Dui</td><td>@c.Email<small>@c.Telefono</small></td><td>@c.Direccion</td></tr>
+        @if (editar)
+        {
+            <tr class="fila-acciones"><td colspan="4"><details><summary>Administrar @c.Nombre</summary>
+                <partial name="_ClienteForm" model="c" />
+                <div class="acciones">
+                    <form asp-action="Activar" asp-route-id="@c.Id" method="post" class="form-grid cols">
+                        <label>Contraseña para activar el acceso <input type="password" name="Password" minlength="8" maxlength="100" autocomplete="new-password" required></label>
+                        <div><button class="secundario">Activar cuenta</button></div>
+                    </form>
+                    @if (User.IsInRole(Roles.Admin))
+                    {
+                        <form asp-action="BorrarCliente" asp-route-id="@c.Id" method="post" data-confirmar="¿Eliminar este cliente?"><button class="peligro">Eliminar cliente</button></form>
+                    }
+                </div>
+            </details></td></tr>
+        }
+    }
+    @if (Model.Count == 0) { <tr><td colspan="4" class="vacio">Todavía no hay clientes.</td></tr> }
+    </tbody></table></div>
+</section>
+@section Scripts { <script src="~/taller.js" asp-append-version="true" defer></script> }

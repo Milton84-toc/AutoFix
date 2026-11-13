@@ -1,0 +1,17 @@
+@model Registro
+@{ ViewData["Title"] = "Registro"; }
+<section class="auth-card">
+    <a class="logo" href="/"><span class="marca">AF</span><span>AutoFix<small>Centro de servicio</small></span></a>
+    <h1>Crear cuenta de cliente</h1>
+    <form asp-action="Registro" method="post" class="form-grid">
+        <div asp-validation-summary="All" class="validacion"></div>
+        <label>Nombre completo <input asp-for="Nombre" required maxlength="120"></label>
+        <label>DUI o identificación <input asp-for="Dui" required maxlength="30"></label>
+        <label>Teléfono <input asp-for="Telefono" type="tel" required maxlength="30"></label>
+        <label>Correo electrónico <input asp-for="Email" type="email" required maxlength="120"></label>
+        <label>Dirección <input asp-for="Direccion" required maxlength="200"></label>
+        <label>Contraseña <input asp-for="Password" type="password" autocomplete="new-password" minlength="8" required></label>
+        <button>Registrarme</button>
+    </form>
+    <p><a href="/cuenta/login">Volver al acceso</a></p>
+</section>

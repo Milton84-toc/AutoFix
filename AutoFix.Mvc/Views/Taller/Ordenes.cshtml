@@ -1,0 +1,26 @@
+@model List<OrdenFila>
+@{
+    ViewData["Title"] = "Órdenes";
+    var crear = User.HasClaim("permiso", Permisos.Crear);
+    var vehiculos = ViewBag.Vehiculos as List<VehiculoFila> ?? [];
+}
+<header class="cabecera"><div><p class="kicker">Operaciones</p><h1>Órdenes de reparación</h1></div></header>
+@if (crear)
+{
+    <details class="panel"><summary>Nueva orden</summary>
+        @if (vehiculos.Count == 0) { <p>Registra un vehículo antes de crear una orden. <a href="/vehiculos">Ir a vehículos</a></p> }
+        else
+        {
+            <form asp-action="CrearOrden" method="post" class="form-grid cols">
+                <label>Vehículo <select name="VehiculoId" required><option value="">Selecciona un vehículo</option>
+                    @foreach (var v in vehiculos) { <option value="@v.Id">@v.Placa · @v.Marca @v.Modelo · @v.Cliente</option> }
+                </select></label>
+                <label>Servicio <input name="Servicio" required maxlength="100" placeholder="Revisión de frenos"></label>
+                <label>Entrega estimada (El Salvador) <input name="FinEstimado" type="datetime-local" required></label>
+                <label class="wide">Problema reportado <textarea name="Problema" required maxlength="1000" rows="3"></textarea></label>
+                <div><button>Crear orden</button></div>
+            </form>
+        }
+    </details>
+}
+<section class="panel"><h2>Reparaciones registradas</h2><partial name="_Ordenes" model="Model" /></section>

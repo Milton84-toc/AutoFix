@@ -1,0 +1,15 @@
+@model List<MecanicoFila>
+@{ ViewData["Title"] = "Mecánicos"; var admin = User.IsInRole(Roles.Admin); }
+<header class="cabecera"><div><p class="kicker">Personal</p><h1>Mecánicos</h1></div><a class="boton secundario" href="/ordenes">Ir a asignaciones</a></header>
+@if (admin) { <details class="panel"><summary>Nuevo mecánico</summary>@await Html.PartialAsync("_MecanicoForm", (MecanicoFila?)null, ViewData)</details> }
+<div class="tarjetas">
+    @foreach (var m in Model)
+    {
+        <article class="panel">
+            <span class="estado @(m.Activo ? "e-Aprobado" : "e-Cancelado")">@(m.Activo ? "Activo" : "Inactivo")</span>
+            <h2>@m.Nombre</h2><p>@m.Especialidad</p><p class="muted">@m.Email</p>
+            @if (admin) { <details><summary>Editar mecánico</summary><partial name="_MecanicoForm" model="m" /></details> }
+        </article>
+    }
+    @if (Model.Count == 0) { <p class="panel vacio">Todavía no hay mecánicos.</p> }
+</div>

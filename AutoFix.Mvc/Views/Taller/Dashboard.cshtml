@@ -1,0 +1,20 @@
+@model Resumen
+@{
+    var cliente = User.IsInRole(Roles.Cliente);
+    var mecanico = User.IsInRole(Roles.Mecanico);
+    ViewData["Title"] = "Inicio";
+}
+<header class="cabecera">
+    <div><p class="kicker">AutoFix</p><h1>@(cliente ? "Mis reparaciones" : mecanico ? "Mis asignaciones" : "Resumen del taller")</h1></div>
+    <a class="boton" href="/ordenes">Ver órdenes</a>
+</header>
+<section class="metricas" aria-label="Resumen">
+    <article><span>Órdenes registradas</span><strong>@Model.Ordenes</strong></article>
+    <article><span>Órdenes activas</span><strong>@Model.Activas</strong></article>
+    <article><span>Reparaciones finalizadas</span><strong>@Model.Finalizadas</strong></article>
+    @if (!cliente && !mecanico)
+    {
+        <article class="@(Model.StockBajo > 0 ? "aviso" : "")"><span>Repuestos con stock bajo</span><strong>@Model.StockBajo</strong></article>
+    }
+</section>
+<section class="panel"><h2>Órdenes recientes</h2><partial name="_Ordenes" model="Model.Recientes" /></section>

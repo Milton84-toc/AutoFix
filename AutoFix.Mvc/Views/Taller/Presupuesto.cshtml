@@ -1,0 +1,84 @@
+@model DetalleVm
+@{
+    var d = Model.Datos;
+    var o = d.Orden;
+    var p = d.Presupuesto;
+    var taller = User.HasClaim("permiso", Permisos.Editar) && !User.IsInRole(Roles.Recepcion);
+    var editar = taller && o.Estado is Estado.EnDiagnostico or Estado.Presupuestado && !string.IsNullOrWhiteSpace(d.Diagnostico);
+    ViewData["Title"] = "Presupuesto";
+}
+<header class="cabecera"><div><a class="kicker" href="/ordenes">← Órdenes</a><h1>Presupuesto</h1><p class="muted">@o.Numero · @o.Servicio</p></div><span class="estado e-@o.Estado">@Etiquetas.De(o.Estado)</span></header>
+<nav class="tabs" aria-label="Secciones de la orden"><a href="/ordenes/@o.Id">Detalle</a><a class="active" href="/ordenes/@o.Id/presupuesto">Presupuesto</a><a href="/ordenes/@o.Id/evidencias">Evidencias</a></nav>
+<section class="panel">
+    @if (p is null) { <p class="muted">Aún no hay un presupuesto para esta orden.</p> }
+    else
+    {
+        <h2>Detalle de costos</h2>
+        <div class="tabla"><table>
+            <thead><tr><th>Concepto</th><th>Cantidad</th><th>Precio unitario</th><th>Subtotal</th></tr></thead>
+            <tbody>
+                <tr><td>Mano de obra</td><td>1</td><td>$@p.ManoObra.ToString("F2")</td><td>$@p.ManoObra.ToString("F2")</td></tr>
+                @foreach (var l in p.Lineas)
+                {
+                    <tr><td>@l.Repuesto</td><td>@l.Cantidad</td><td>$@l.Precio.ToString("F2")</td><td>$@l.Subtotal.ToString("F2")</td></tr>
+                }
+            </tbody>
+            <tfoot><tr><th colspan="3">Total en USD</th><th>$@p.Total.ToString("F2")</th></tr></tfoot>
+        </table></div>
+        @if (!string.IsNullOrWhiteSpace(p.Observaciones)) { <p>@p.Observaciones</p> }
+        @if (p.AprobadoEn.HasValue)
+        {
+            <p class="alert ok">Aprobado el @HoraTaller.Texto(p.AprobadoEn.Value)
+            @if (!User.IsInRole(Roles.Cliente)) { <span>por @p.AprobadoPor</span> }</p>
+        }
+        else { <p class="muted">Pendiente de aprobación del taller.</p> }
+        @if (taller && o.Estado == Estado.Presupuestado)
+        {
+            <form asp-action="EstadoOrden" asp-route-id="@o.Id" method="post">
+                <input type="hidden" name="Version" value="@d.Version"><input type="hidden" name="Estado" value="PendienteAprobacion">
+                <input type="hidden" name="presupuesto" value="true"><button>Enviar para aprobación</button>
+            </form>
+        }
+        @if (o.Estado == Estado.PendienteAprobacion && User.HasClaim("permiso", Permisos.Aprobar))
+        {
+            <form asp-action="Aprobar" asp-route-id="@o.Id" method="post"><input type="hidden" name="Version" value="@d.Version"><button>Aprobar presupuesto</button></form>
+        }
+    }
+</section>
+@if (editar)
+{
+    <section class="panel">
+        <h2>@(p is null ? "Crear presupuesto" : "Editar presupuesto")</h2>
+        <form asp-action="GuardarPresupuesto" asp-route-id="@o.Id" method="post" class="form-grid" data-presupuesto>
+            <input type="hidden" name="Version" value="@d.Version">
+            <label>Mano de obra (USD) <input name="ManoObra" type="number" min="0" max="1000000" step=".01" value="@(p?.ManoObra.ToString(CultureInfo.InvariantCulture) ?? "0")" required></label>
+            <label>Observaciones <textarea name="Observaciones" rows="2" maxlength="600">@p?.Observaciones</textarea></label>
+            <h3>Repuestos</h3>
+            <div data-lineas>
+                @foreach (var linea in p?.Lineas ?? [])
+                {
+                    <div class="linea" data-linea>
+                        <label>Repuesto <select data-campo="RepuestoId"><option value="">Selecciona</option>
+                            @foreach (var r in Model.Repuestos) { <option value="@r.Id" selected="@(r.Id == linea.RepuestoId)" data-precio="@r.Precio.ToString(CultureInfo.InvariantCulture)">@r.Nombre · $@r.Precio.ToString("F2")</option> }
+                        </select></label>
+                        <label>Cantidad <input data-campo="Cantidad" type="number" min="1" max="1000000" value="@linea.Cantidad"></label>
+                        <button type="button" class="peligro" data-quitar>Quitar</button>
+                    </div>
+                }
+            </div>
+            <template data-plantilla><div class="linea" data-linea>
+                <label>Repuesto <select data-campo="RepuestoId" required><option value="">Selecciona</option>
+                    @foreach (var r in Model.Repuestos) { <option value="@r.Id" data-precio="@r.Precio.ToString(CultureInfo.InvariantCulture)">@r.Nombre · $@r.Precio.ToString("F2") (@r.Existencias disponibles)</option> }
+                </select></label>
+                <label>Cantidad <input data-campo="Cantidad" type="number" min="1" max="1000000" value="1" required></label>
+                <button type="button" class="peligro" data-quitar>Quitar</button>
+            </div></template>
+            <div class="acciones">
+                @if (Model.Repuestos.Count > 0) { <button type="button" class="secundario" data-agregar>Agregar repuesto</button> }
+                <strong data-total aria-live="polite">Total estimado</strong>
+                <button>Guardar presupuesto</button>
+            </div>
+        </form>
+    </section>
+}
+@section Scripts { <script src="~/taller.js" asp-append-version="true" defer></script> }

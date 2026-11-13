@@ -1,0 +1,18 @@
+Trazas de la ejecución de la rúbrica. Fechas y horas en UTC.
+
+2026-11-12T23:27:57.6763614+00:00 Usuario=supervisor@autofix.test POST /api/ordenes/2/asignar HTTP 204 DuracionMs=64.7 CorrelationId=c17d349e-4332-4cb4-a86b-423e0c626e5c Excepcion=-
+2026-11-12T23:27:57.8426608+00:00 Usuario=supervisor@autofix.test POST /api/ordenes/3/asignar HTTP 204 DuracionMs=11.0 CorrelationId=f44c557e-cc28-4459-955a-ed2140355c55 Excepcion=-
+2026-11-12T23:27:57.8627870+00:00 Usuario=f4fcdc097@autofix.test POST /api/ordenes/2/estado HTTP 403 DuracionMs=6.2 CorrelationId=c7787a3f-2bf4-40da-8161-a34dc454308b Excepcion=-
+2026-11-12T23:27:58.0221921+00:00 Usuario=mecanico@autofix.test POST /api/ordenes/2/estado HTTP 204 DuracionMs=39.0 CorrelationId=0d985522-9eb9-4358-ae29-73c1118e2890 Excepcion=-
+2026-11-12T23:27:58.2920097+00:00 Usuario=mecanico@autofix.test POST /api/ordenes/3/estado HTTP 204 DuracionMs=9.7 CorrelationId=45567b33-2717-43fc-a7b8-d3307d77b95b Excepcion=-
+2026-11-12T23:27:58.3651768+00:00 Usuario=mecanico@autofix.test POST /api/ordenes/2/estado HTTP 204 DuracionMs=9.8 CorrelationId=62c915f2-2922-43cf-aecd-249942dacdf1 Excepcion=-
+2026-11-12T23:27:58.4873059+00:00 Usuario=mecanico@autofix.test POST /api/ordenes/3/estado HTTP 204 DuracionMs=9.2 CorrelationId=c273fbdf-0021-42b3-93c9-594f0ea9f269 Excepcion=-
+2026-11-12T23:27:59.0621566+00:00 Usuario=mecanico@autofix.test POST /api/ordenes/3/estado HTTP 204 DuracionMs=12.3 CorrelationId=887b4e4b-5f62-4eef-9ce5-4364937d8fe7 Excepcion=-
+2026-11-12T23:27:59.0614912+00:00 Usuario=mecanico@autofix.test POST /api/ordenes/2/estado HTTP 409 DuracionMs=170.9 CorrelationId=bb9e0028-5078-4815-8e24-cfdca5c7441c Excepcion=DbUpdateConcurrencyException: The database operation was expected to affect 1 row(s), but actually affected 0 row(s); data may have been modified or deleted since entities were loaded. See https://go.microsoft.com/fwlink/?LinkId=527962 for information on understanding and handling optimistic concurrency exceptions.
+2026-11-12T23:27:59.2749480+00:00 Usuario=mecanico@autofix.test POST /api/ordenes/2/estado HTTP 409 DuracionMs=7.9 CorrelationId=2533fb36-2648-4974-94a5-f6253cbddef2 Excepcion=Problema: Existencias insuficientes para Pastillas de prueba. Disponibles: 0.
+2026-11-12T23:27:59.4810715+00:00 Usuario=supervisor@autofix.test POST /api/ordenes/5/asignar HTTP 204 DuracionMs=7.1 CorrelationId=6dc67aca-ee4c-4b6f-8a8a-0b5d2e11b5a8 Excepcion=-
+2026-11-12T23:27:59.4800460+00:00 Usuario=supervisor@autofix.test POST /api/ordenes/6/asignar HTTP 409 DuracionMs=158.2 CorrelationId=70c537d1-66a8-4e9c-ba58-72672915bec7 Excepcion=Problema: El mecánico ya tiene una reparación que se cruza con ese horario.
+2026-11-12T23:27:59.6789813+00:00 Usuario=supervisor@autofix.test POST /api/ordenes/3/finalizar HTTP 409 DuracionMs=16.2 CorrelationId=95d9ab01-489c-4489-9ca1-c70fd564798e Excepcion=DbUpdateConcurrencyException: Versión de orden desactualizada.
+2026-11-12T23:27:59.7052894+00:00 Usuario=supervisor@autofix.test POST /api/ordenes/3/finalizar HTTP 204 DuracionMs=9.7 CorrelationId=9da3b392-a968-42fc-8a1b-cc5e7e62300c Excepcion=-
+2026-11-12T23:27:59.7281882+00:00 Usuario=recepcion@autofix.test POST /api/ordenes/3/estado HTTP 204 DuracionMs=14.5 CorrelationId=2579240a-2280-40d6-ba38-d05e1b1e91f6 Excepcion=-
+2026-11-12T23:27:59.7602529+00:00 Usuario=anónimo GET /api/ordenes HTTP 401 DuracionMs=12.8 CorrelationId=90244c12-1737-4513-83e5-875af44b5ca7 Excepcion=-

@@ -1,0 +1,13 @@
+@model Login
+@{ ViewData["Title"] = "Iniciar sesión"; }
+<section class="auth-card">
+    <a class="logo" href="/"><span class="marca">AF</span><span>AutoFix<small>Centro de servicio</small></span></a>
+    <h1>Iniciar sesión</h1>
+    <form asp-action="Login" method="post" class="form-grid">
+        <div asp-validation-summary="All" class="validacion"></div>
+        <label>Correo electrónico <input asp-for="Email" type="email" autocomplete="username" required></label>
+        <label>Contraseña <input asp-for="Password" type="password" autocomplete="current-password" required></label>
+        <button>Ingresar</button>
+    </form>
+    <p class="muted">¿Eres cliente? <a href="/cuenta/registro">Crea tu cuenta</a></p>
+</section>

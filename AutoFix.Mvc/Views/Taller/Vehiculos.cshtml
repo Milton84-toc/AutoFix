@@ -1,0 +1,40 @@
+@model VehiculosVm
+@{
+    ViewData["Title"] = "Vehículos";
+    var editar = User.IsInRole(Roles.Admin) || User.IsInRole(Roles.Recepcion);
+    ViewData["Clientes"] = Model.Clientes;
+}
+<header class="cabecera"><div><p class="kicker">Directorio</p><h1>@(User.IsInRole(Roles.Cliente) ? "Mis vehículos" : "Vehículos")</h1></div></header>
+@if (editar)
+{
+    <details class="panel"><summary>Nuevo vehículo</summary>
+    @if (Model.Clientes.Count == 0) { <p>Registra al propietario en <a href="/clientes">Clientes</a>.</p> }
+    else { @await Html.PartialAsync("_VehiculoForm", (VehiculoFila?)null, ViewData) }
+    </details>
+}
+<section class="tarjetas">
+    @foreach (var v in Model.Vehiculos)
+    {
+        <article class="panel">
+            @if (v.Foto is not null) { <img class="foto-catalogo" src="/imagen/@v.Foto" alt="Vehículo con placa @v.Placa" loading="lazy"> }
+            <h2>@v.Marca @v.Modelo <span class="estado">@v.Placa</span></h2>
+            <p>@v.Anio · @v.Color</p><p class="muted">@v.Cliente<br>Chasis @v.Chasis</p>
+            @if (editar)
+            {
+                <details><summary>Administrar vehículo</summary>
+                    @await Html.PartialAsync("_VehiculoForm", v, ViewData)
+                    <form asp-action="FotoVehiculo" asp-route-id="@v.Id" method="post" enctype="multipart/form-data" class="form-grid">
+                        <label>Fotografía del vehículo <input name="archivo" type="file" accept=".jpg,.jpeg,.png" required></label>
+                        <div><button class="secundario">Guardar foto</button></div>
+                    </form>
+                    @if (User.IsInRole(Roles.Admin))
+                    {
+                        <form asp-action="BorrarVehiculo" asp-route-id="@v.Id" method="post" data-confirmar="¿Eliminar este vehículo?"><button class="peligro">Eliminar vehículo</button></form>
+                    }
+                </details>
+            }
+        </article>
+    }
+    @if (Model.Vehiculos.Count == 0) { <p class="panel vacio">No hay vehículos registrados.</p> }
+</section>
+@section Scripts { <script src="~/taller.js" asp-append-version="true" defer></script> }

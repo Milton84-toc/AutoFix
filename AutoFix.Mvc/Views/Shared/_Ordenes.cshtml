@@ -1,0 +1,15 @@
+@model List<OrdenFila>
+<div class="tabla">
+    <table>
+        <thead><tr><th>Orden</th><th>Vehículo</th><th>Servicio</th><th>Estado</th><th>Mecánico</th><th>Entrega estimada</th></tr></thead>
+        <tbody>
+        @foreach (var o in Model)
+        {
+            <tr><td><a href="/ordenes/@o.Id">@o.Numero</a><small>@o.Cliente</small></td>
+                <td>@o.Placa</td><td>@o.Servicio</td><td><span class="estado e-@o.Estado">@Etiquetas.De(o.Estado)</span></td>
+                <td>@(o.Mecanico ?? "Por asignar")</td><td>@HoraTaller.Texto(o.FinEstimado)</td></tr>
+        }
+        @if (Model.Count == 0) { <tr><td colspan="6" class="vacio">No hay órdenes para mostrar.</td></tr> }
+        </tbody>
+    </table>
+</div>

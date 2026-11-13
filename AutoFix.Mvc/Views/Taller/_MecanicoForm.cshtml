@@ -1,0 +1,10 @@
+@model MecanicoFila
+<form asp-action="GuardarMecanico" method="post" class="form-grid cols">
+    <input type="hidden" name="id" value="@Model?.Id">
+    <label>Nombre <input name="Nombre" value="@Model?.Nombre" required maxlength="120"></label>
+    <label>Correo <input type="email" name="Email" value="@Model?.Email" required maxlength="120"></label>
+    <label>Especialidad <input name="Especialidad" value="@Model?.Especialidad" required maxlength="80"></label>
+    <label>Acceso <select name="Activo"><option value="true">Activo</option><option value="false" selected="@(Model?.Activo == false)">Inactivo</option></select></label>
+    <label>@(Model is null ? "Contraseña inicial" : "Nueva contraseña (opcional)") <input type="password" name="Password" minlength="8" maxlength="100" autocomplete="new-password" required="@(Model is null)"></label>
+    <div><button>Guardar mecánico</button></div>
+</form>

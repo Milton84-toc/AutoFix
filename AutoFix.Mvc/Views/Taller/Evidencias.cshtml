@@ -1,0 +1,31 @@
+@model OrdenDetalle
+@{
+    ViewData["Title"] = "Evidencias";
+    var o = Model.Orden;
+    var recepcion = User.IsInRole(Roles.Recepcion);
+    var tipos = new List<TipoEvidencia>();
+    if (o.Estado <= Estado.EnDiagnostico) tipos.Add(TipoEvidencia.Recepcion);
+    if (!recepcion && o.Estado is >= Estado.EnDiagnostico and <= Estado.EnReparacion) tipos.Add(TipoEvidencia.Dano);
+    if (!recepcion && o.Estado is Estado.EnReparacion or Estado.Finalizado) tipos.AddRange([TipoEvidencia.Repuesto, TipoEvidencia.Finalizada]);
+}
+<header class="cabecera"><div><a class="kicker" href="/ordenes">← Órdenes</a><h1>Evidencias</h1><p class="muted">@o.Numero · @o.Placa</p></div><span class="estado e-@o.Estado">@Etiquetas.De(o.Estado)</span></header>
+<nav class="tabs" aria-label="Secciones de la orden"><a href="/ordenes/@o.Id">Detalle</a><a href="/ordenes/@o.Id/presupuesto">Presupuesto</a><a class="active" href="/ordenes/@o.Id/evidencias">Evidencias</a></nav>
+@if (tipos.Count > 0 && User.HasClaim("permiso", Permisos.Editar))
+{
+    <section class="panel"><h2>Agregar fotografía</h2>
+        <form asp-action="SubirEvidencia" asp-route-id="@o.Id" method="post" enctype="multipart/form-data" class="form-grid cols">
+            <label>Tipo <select name="tipo">@foreach (var t in tipos) { <option value="@t">@Etiquetas.De(t)</option> }</select></label>
+            <label>Archivo (JPG, JPEG o PNG, hasta 5 MB) <input type="file" name="archivo" accept=".jpg,.jpeg,.png" required></label>
+            <div><button>Subir evidencia</button></div>
+        </form>
+    </section>
+}
+<section class="tarjetas">
+    @foreach (var foto in Model.Evidencias)
+    {
+        <figure class="panel"><a href="/imagen/@foto.Foto"><img class="foto-catalogo" src="/imagen/@foto.Foto" alt="@Etiquetas.De(foto.Tipo)" loading="lazy"></a>
+            <figcaption><strong>@Etiquetas.De(foto.Tipo)</strong><small>@HoraTaller.Texto(foto.Fecha)</small></figcaption>
+        </figure>
+    }
+    @if (Model.Evidencias.Count == 0) { <p class="panel vacio">Aún no hay fotografías adjuntas.</p> }
+</section>

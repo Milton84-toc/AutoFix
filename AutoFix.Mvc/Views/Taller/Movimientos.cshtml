@@ -1,0 +1,31 @@
+@model MovimientosVm
+@{ ViewData["Title"] = "Movimientos"; }
+<header class="cabecera"><div><p class="kicker">Almacén</p><h1>Movimientos de inventario</h1></div><a class="boton secundario" href="/inventario">Ver inventario</a></header>
+@if (User.HasClaim("permiso", Permisos.Inventario))
+{
+    <details class="panel"><summary>Registrar entrada o salida</summary>
+    @if (Model.Repuestos.Count == 0) { <p>Agrega un repuesto en el inventario.</p> }
+    else
+    {
+        <form asp-action="Movimiento" method="post" class="form-grid cols">
+            <label>Repuesto <select name="RepuestoId" required>
+                @foreach (var r in Model.Repuestos) { <option value="@r.Id">@r.Nombre (@r.Existencias disponibles)</option> }
+            </select></label>
+            <label>Tipo <select name="Entrada"><option value="true">Entrada</option><option value="false">Salida</option></select></label>
+            <label>Cantidad <input name="Cantidad" type="number" min="1" max="1000000" required></label>
+            <label>Motivo <input name="Motivo" required maxlength="180"></label>
+            <div><button>Registrar movimiento</button></div>
+        </form>
+    }
+    </details>
+}
+<section class="panel">
+    <div class="tabla"><table><thead><tr><th>Fecha</th><th>Repuesto</th><th>Cantidad</th><th>Motivo</th><th>Usuario</th></tr></thead><tbody>
+    @foreach (var m in Model.Movimientos)
+    {
+        <tr><td>@HoraTaller.Texto(m.Fecha)</td><td>@m.Repuesto</td><td><span class="estado @(m.Cantidad > 0 ? "e-Aprobado" : "e-PendienteAprobacion")">@m.Cantidad.ToString("+0;-0")</span></td><td>@m.Motivo
+        @if (m.OrdenId.HasValue) { <small><a href="/ordenes/@m.OrdenId">Ver orden</a></small> }</td><td>@m.Usuario</td></tr>
+    }
+    @if (Model.Movimientos.Count == 0) { <tr><td colspan="5" class="vacio">Todavía no hay movimientos.</td></tr> }
+    </tbody></table></div>
+</section>

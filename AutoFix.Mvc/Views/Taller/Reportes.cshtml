@@ -1,0 +1,25 @@
+@model Resumen
+@{ ViewData["Title"] = "Reportes"; }
+<header class="cabecera"><div><p class="kicker">Operaciones</p><h1>Reporte del taller</h1></div></header>
+<section class="panel">
+    <form method="get" action="/reportes" class="form-grid cols">
+        <label>Ingreso desde <input type="date" name="desde" value="@ViewBag.Desde"></label>
+        <label>Ingreso hasta <input type="date" name="hasta" value="@ViewBag.Hasta"></label>
+        <div class="acciones"><button>Aplicar filtro</button><a href="/reportes">Limpiar</a></div>
+    </form>
+</section>
+<section class="metricas">
+    <article><span>Órdenes del período</span><strong>@Model.Ordenes</strong></article>
+    <article><span>Órdenes activas</span><strong>@Model.Activas</strong></article>
+    <article><span>Reparaciones finalizadas</span><strong>@Model.Finalizadas</strong></article>
+    <article><span>Presupuestos aprobados</span><strong>$@Model.TotalAprobado.ToString("F2")</strong></article>
+</section>
+<section class="panel"><h2>Órdenes por estado</h2>
+    <div class="tabla"><table><thead><tr><th>Estado</th><th>Órdenes</th></tr></thead><tbody>
+        @foreach (var estado in Enum.GetValues<Estado>())
+        {
+            <tr><td><span class="estado e-@estado">@Etiquetas.De(estado)</span></td><td>@Model.PorEstado.GetValueOrDefault(estado)</td></tr>
+        }
+    </tbody></table></div>
+</section>
+<section class="panel"><h2>Órdenes recientes del período</h2><partial name="_Ordenes" model="Model.Recientes" /></section>

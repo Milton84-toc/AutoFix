@@ -1,0 +1,14 @@
+01. PASS · Cliente #2 y dos vehículos guardados y visibles en su cuenta.
+02. PASS · Orden AF-AC668B1179DB en Recibido. Duplicada rechazada con HTTP 409.
+03. PASS · Asignación a mecánico #1; dos horarios consecutivos aceptados.
+04. PASS · Cliente sin permiso recibió HTTP 403. Correlation ID c7787a3f-2bf4-40da-8161-a34dc454308b.
+05. PASS · Presupuesto de $64.50 con $15.50 de mano de obra y subtotal de $49.00 en repuestos.
+06. PASS · Supervisor aprobó el presupuesto y el cliente vio el estado Aprobado.
+07. PASS · Foto de daño guardada y recuperada por propietario; formato, tamaño y acceso ajeno rechazados.
+08. PASS · Al iniciar la reparación se descontaron 2 unidades y quedó una salida vinculada a la orden.
+09. PASS · Existencias insuficientes devolvieron HTTP 409; se revirtió el descuento parcial.
+10A. PASS · Inventario concurrente: [409, 204]; saldo 0 y una sola salida.
+10B. PASS · Horario concurrente: [204, 409]; un solo turno. Versión obsoleta: 409.
+11. PASS · Una petición sin JWT devolvió HTTP 401.
+12. PASS · El log de la operación rechazada coincide con el usuario, la ruta, el HTTP 403 y el Correlation ID.
+2026-11-12T23:27:57.8627870+00:00 Usuario=f4fcdc097@autofix.test POST /api/ordenes/2/estado HTTP 403 DuracionMs=6.2 CorrelationId=c7787a3f-2bf4-40da-8161-a34dc454308b Excepcion=-

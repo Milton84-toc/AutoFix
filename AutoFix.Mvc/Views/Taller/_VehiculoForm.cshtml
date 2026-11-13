@@ -1,0 +1,15 @@
+@model VehiculoFila
+@{ var clientes = ViewData["Clientes"] as List<ClienteFila> ?? []; }
+<form asp-action="GuardarVehiculo" method="post" class="form-grid cols">
+    <input type="hidden" name="id" value="@Model?.Id">
+    <label>Propietario <select name="ClienteId" required><option value="">Selecciona un cliente</option>
+        @foreach (var c in clientes) { <option value="@c.Id" selected="@(c.Id == Model?.ClienteId)">@c.Nombre · @c.Dui</option> }
+    </select></label>
+    <label>Placa <input name="Placa" value="@Model?.Placa" required maxlength="20"></label>
+    <label>Marca <input name="Marca" value="@Model?.Marca" required maxlength="80"></label>
+    <label>Modelo <input name="Modelo" value="@Model?.Modelo" required maxlength="80"></label>
+    <label>Año <input type="number" name="Anio" value="@Model?.Anio" required min="1900" max="2100"></label>
+    <label>Color <input name="Color" value="@Model?.Color" required maxlength="40"></label>
+    <label>Número de chasis <input name="Chasis" value="@Model?.Chasis" required maxlength="50"></label>
+    <div><button>Guardar vehículo</button></div>
+</form>

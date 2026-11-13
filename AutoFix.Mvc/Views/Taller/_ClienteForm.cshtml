@@ -1,0 +1,10 @@
+@model ClienteFila
+<form asp-action="GuardarCliente" method="post" class="form-grid cols">
+    <input type="hidden" name="id" value="@Model?.Id">
+    <label>Nombre completo <input name="Nombre" value="@Model?.Nombre" required maxlength="120"></label>
+    <label>DUI o identificación <input name="Dui" value="@Model?.Dui" required maxlength="30"></label>
+    <label>Teléfono <input name="Telefono" value="@Model?.Telefono" type="tel" required maxlength="30"></label>
+    <label>Correo electrónico <input name="Email" value="@Model?.Email" type="email" required maxlength="120"></label>
+    <label>Dirección <input name="Direccion" value="@Model?.Direccion" required maxlength="200"></label>
+    <div><button>Guardar cliente</button></div>
+</form>
